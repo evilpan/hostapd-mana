@@ -158,7 +158,7 @@ static int hostapd_config_read_ssidlist(const char *fname,
 			continue;
 
 		pos = buf;
-		if(strlen(pos) > SSID_MAX_LEN){
+		if(strlen(pos) > SSID_MAX_LEN - 1){
 			wpa_printf(MSG_ERROR, "SSID %s is too long (more than %d characters.)",pos,SSID_MAX_LEN);
 			return -1;
 		}
@@ -171,7 +171,7 @@ static int hostapd_config_read_ssidlist(const char *fname,
 		}
 
 		*ssid_filter = new_ssid_filter;
-		os_memcpy((*ssid_filter)[*num].ssid, pos, strnlen(pos, SSID_MAX_LEN));
+		os_memcpy((*ssid_filter)[*num].ssid, pos, strnlen(pos, SSID_MAX_LEN-1) + 1);
 
 		(*num)++;
 		wpa_printf(MSG_INFO, "SSID: '%s' added.", pos);
@@ -2198,6 +2198,7 @@ static int hostapd_config_fill(struct hostapd_config *conf,
 			HASH_ADD_STR(mana_ssidhash, ssid_txt, newssid);
 			wpa_printf(MSG_INFO, "MANA: Preload SSID: %s", ssid);
 		}
+		os_free(ssid_list_);
 		wpa_printf(MSG_INFO, "MANA: Preload %d SSID(s).", ssid_num_);
 	} else if (os_strcmp(buf, "mana_wpe") == 0) {
 		int val = atoi(pos);
